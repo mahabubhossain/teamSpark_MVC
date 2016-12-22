@@ -2,74 +2,88 @@ package edu.mum.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class OrderItem implements Serializable {
 
-	@Id 
- 	@GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "ORDERITEM_ID")
-    private Long id = null;
- 
-   private int version = 0;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
- 
-   private Integer quantity;
- 
-   @ManyToOne
-   @JoinColumn(name="ORDER_ID")
-   private Order order;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ORDERITEM_ID")
+	private Long id = null;
 
-   @OneToOne(fetch=FetchType.LAZY,  cascade = {CascadeType.PERSIST,CascadeType.REMOVE}) 
-	@JoinColumn(name="ORDERITEM_ID")
-    private Item product;
-    
-	   public OrderItem() {}
-	   public OrderItem (Integer  quantity,  Item product ) {
-		   this.quantity = quantity;
- 		   this.product = product;
-	   }
+	private int version = 0;
 
+	private Integer quantity;
 
-public Long getId() {
-	return id;
-}
+	@ManyToOne
+	@JoinColumn(name = "ORDER_ID")
+	private Order order;
 
-public void setId(Long id) {
-	this.id = id;
-}
+	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+	@JoinColumn(name = "ORDERITEM_ID")
+	private Item product;
 
-public int getVersion() {
-	return version;
-}
+	public OrderItem() {
+	}
 
-public void setVersion(int version) {
-	this.version = version;
-}
+	public OrderItem(Integer quantity, Item product) {
+		this.quantity = quantity;
+		this.product = product;
+	}
 
-public int getQuantity() {
-	return quantity;
-}
+	public Long getId() {
+		return id;
+	}
 
-public void setQuantity(int quantity) {
-	this.quantity = quantity;
-}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-public Order getOrder() {
-	return order;
-}
+	public int getVersion() {
+		return version;
+	}
 
-public void setOrder(Order order) {
-	this.order = order;
-}
+	public void setVersion(int version) {
+		this.version = version;
+	}
 
-public Item getProduct() {
-	return product;
-}
+	public int getQuantity() {
+		return quantity;
+	}
 
-public void setProduct(Item product) {
-	this.product = product;
-}
-   
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	public Item getProduct() {
+		return product;
+	}
+
+	public void setProduct(Item product) {
+		this.product = product;
+	}
+
 }

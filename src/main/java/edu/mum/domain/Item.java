@@ -1,172 +1,245 @@
 package edu.mum.domain;
 
- 
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 
 /**
  * An item for auction.
  *
  * @author Christian Bauer
  */
- 
-@NamedQuery(name="Item.findByCategory",
-query="select i from Item i, Category c where c.name = :categoryName and i member of c.items" ) 
 
+@NamedQuery(name = "Item.findByCategory", query = "select i from Item i, Category c where c.name = :categoryName and i member of c.items")
 
 @Entity
 @Table(name = "ITEM")
- public class Item   {
+public class Item implements Serializable {
 
-     @Id 
- 	@GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "ITEM_ID")
-    private Long id = null;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    @Version
-    @Column(name = "OBJ_VERSION")
-    private int version = 0;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ITEM_ID")
+	private Long id = null;
 
-    @Column(name = "ITEM_NAME", length = 255, nullable = false, updatable = false)
-    private String name;
+	@Version
+	@Column(name = "OBJ_VERSION")
+	private int version = 0;
 
-	@ManyToOne(fetch=FetchType.EAGER,  cascade = CascadeType.ALL) 
-	@JoinColumn(name="itemSellerId") 
-     private User seller;
+	@Column(name = "ITEM_NAME", length = 255, nullable = false, updatable = false)
+	private String name;
 
-@Transient
-    private User buyer;
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "itemSellerId")
+	private User seller;
 
-    @Column(name = "DESCRIPTION", length = 4000, nullable = false)
-    private String description;
+	@Transient
+	private User buyer;
 
-     private BigDecimal initialPrice;
+	@Column(name = "DESCRIPTION", length = 4000, nullable = false)
+	private String description;
 
-     private BigDecimal reservePrice;
+	private BigDecimal initialPrice;
 
-     @ManyToMany(fetch=FetchType.EAGER, cascade= {CascadeType.PERSIST,CascadeType.MERGE })
-     private Set<Category> categories = new HashSet<Category>();
+	private BigDecimal reservePrice;
 
-    @Transient
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	private Set<Category> categories = new HashSet<Category>();
+
+	@Transient
 	private User approvedBy;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "APPROVAL_DATETIME", nullable = true)
-    private Date approvalDatetime;
- 
-@Transient
-       private Collection<String> images = new ArrayList<String>();
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "APPROVAL_DATETIME", nullable = true)
+	private Date approvalDatetime;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="CREATED", nullable = true, updatable = false)
-    private Date created = new Date();
+	@Transient
+	private Collection<String> images = new ArrayList<String>();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "START_DATE", nullable = true, updatable = false)
-    private Date startDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "CREATED", nullable = true, updatable = false)
+	private Date created = new Date();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "END_DATE", nullable = true, updatable = false)
-    private Date endDate;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "START_DATE", nullable = true, updatable = false)
+	private Date startDate;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "END_DATE", nullable = true, updatable = false)
+	private Date endDate;
 
- 
-    // ********************** Accessor Methods ********************** //
+	// ********************** Accessor Methods ********************** //
 
-    public Long getId() { return id; }
-    public int getVersion() { return version; }
+	public Long getId() {
+		return id;
+	}
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+	public int getVersion() {
+		return version;
+	}
 
-    public User getSeller() { return seller; }
+	public String getName() {
+		return name;
+	}
 
-    public User getBuyer() { return buyer; }
-    public void setBuyer(User buyer) { this.buyer = buyer; }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+	public User getSeller() {
+		return seller;
+	}
 
-    public BigDecimal getInitialPrice() { return initialPrice; }
-    public void  setInitialPrice(BigDecimal initialPrice) { this.initialPrice =  initialPrice; }
+	public User getBuyer() {
+		return buyer;
+	}
 
-    public BigDecimal getReservePrice() { return reservePrice; }
+	public void setBuyer(User buyer) {
+		this.buyer = buyer;
+	}
 
-    public void setReservePrice(BigDecimal reservePrice) { this.reservePrice =  reservePrice; }
+	public String getDescription() {
+		return description;
+	}
 
-    public Date getStartDate() { return startDate; }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public Date getEndDate() { return endDate; }
+	public BigDecimal getInitialPrice() {
+		return initialPrice;
+	}
+
+	public void setInitialPrice(BigDecimal initialPrice) {
+		this.initialPrice = initialPrice;
+	}
+
+	public BigDecimal getReservePrice() {
+		return reservePrice;
+	}
+
+	public void setReservePrice(BigDecimal reservePrice) {
+		this.reservePrice = reservePrice;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
 
 	public void addCategory(Category category) {
 		this.categories.add(category);
 		category.getItems().add(this);
 	}
 
-    public User getApprovedBy() { return approvedBy; }
-    public void setApprovedBy(User approvedBy) { this.approvedBy = approvedBy; }
+	public User getApprovedBy() {
+		return approvedBy;
+	}
 
-    public Date getApprovalDatetime() { return approvalDatetime; }
-    public void setApprovalDatetime(Date approvalDatetime) { this.approvalDatetime = approvalDatetime; }
+	public void setApprovedBy(User approvedBy) {
+		this.approvedBy = approvedBy;
+	}
 
- 
-    // Read-only, modify through Category#addItem() and Category@removeItem();
-    public Set<Category> getCategories() { return Collections.unmodifiableSet(categories); }
+	public Date getApprovalDatetime() {
+		return approvalDatetime;
+	}
 
-    public void setId(Long id) {
+	public void setApprovalDatetime(Date approvalDatetime) {
+		this.approvalDatetime = approvalDatetime;
+	}
+
+	// Read-only, modify through Category#addItem() and Category@removeItem();
+	public Set<Category> getCategories() {
+		return Collections.unmodifiableSet(categories);
+	}
+
+	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public void setSeller(User seller) {
 		this.seller = seller;
 	}
+
 	public void setCategories(Set<Category> categories) {
 		this.categories = categories;
 	}
-	public Collection<String> getImages() { return images; }
 
-    public Date getCreated() { return created; }
+	public Collection<String> getImages() {
+		return images;
+	}
 
-    // ********************** Common Methods ********************** //
+	public Date getCreated() {
+		return created;
+	}
 
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Item)) return false;
+	// ********************** Common Methods ********************** //
 
-        final Item item = (Item) o;
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Item))
+			return false;
 
-        if (! (created.getTime() == item.created.getTime()) ) return false;
-        if (name != null ? !name.equals(item.name) : item.name != null) return false;
+		final Item item = (Item) o;
 
-        return true;
-    }
+		if (!(created.getTime() == item.created.getTime()))
+			return false;
+		if (name != null ? !name.equals(item.name) : item.name != null)
+			return false;
 
-    public int hashCode() {
-        int result;
-        result = (name != null ? name.hashCode() : 0);
-        result = 29 * result + created.hashCode();
-        return result;
-    }
+		return true;
+	}
 
-    public String toString() {
-        return  "Item ('" + getId() + "'), " +
-                "Name: '" + getName() + "' " +
-                "Initial Price: '" + getInitialPrice()+ "'";
-    }
+	public int hashCode() {
+		int result;
+		result = (name != null ? name.hashCode() : 0);
+		result = 29 * result + created.hashCode();
+		return result;
+	}
 
-    public int compareTo(Object o) {
-        if (o instanceof Item) {
-            // Don't compare Date objects! Use the time in milliseconds!
-            return Long.valueOf(this.getCreated().getTime()).compareTo(
-                    Long.valueOf( ((Item)o).getCreated().getTime())
-                   );
-        }
-        return 0;
-    }
+	public String toString() {
+		return "Item ('" + getId() + "'), " + "Name: '" + getName() + "' " + "Initial Price: '" + getInitialPrice()
+				+ "'";
+	}
 
-    // ********************** Business Methods ********************** //
+	public int compareTo(Object o) {
+		if (o instanceof Item) {
+			// Don't compare Date objects! Use the time in milliseconds!
+			return Long.valueOf(this.getCreated().getTime()).compareTo(Long.valueOf(((Item) o).getCreated().getTime()));
+		}
+		return 0;
+	}
 
-  
+	// ********************** Business Methods ********************** //
+
 }
