@@ -14,89 +14,73 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Order implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ORDER_ID")
-	private Long id = null;
-	private int version = 0;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ORDER_ID")
+    private Long id = null;
 
-	private String orderNumber;
+    private int version = 0;
 
-	@OneToMany(targetEntity = OrderItem.class, mappedBy = "order", fetch = FetchType.EAGER)
-	private List<OrderItem> items = new ArrayList<OrderItem>();
+    private String orderNumber;
 
-	// private OrderPayment payment = new OrderPayment();
+    @OneToMany(targetEntity = OrderItem.class, mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderItem> items = new ArrayList<OrderItem>();
 
-	// @ManyToOne(fetch = FetchType.EAGER)
-	// @JoinColumn(name = "member_id")
-	// private User member; // / customer info
+    private int orderStatus;
 
-	// private int orderType; //store pickup or online order
+    public Order() {
+    }
 
-	private int orderStatus;
+    public int getOrderStatus() {
+        return orderStatus;
+    }
 
-	/*
-	 * public User getMember() { return member; }
-	 * 
-	 * public void setMember(User member) { this.member = member; }
-	 */
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 
-	public int getOrderStatus() {
-		return orderStatus;
-	}
+    public Order(String orderNumber, List<OrderItem> items) {
+        this.orderNumber = orderNumber;
+        this.items = items;
+        this.orderStatus = 1;
+    }
 
-	public void setOrderStatus(int orderStatus) {
-		this.orderStatus = orderStatus;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Order() {
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Order(String orderNumber, List<OrderItem> items) {
-		this.orderNumber = orderNumber;
-		this.items = items;
-		this.orderStatus = 1;
-	}
+    public int getVersion() {
+        return version;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public String getOrderNumber() {
+        return orderNumber;
+    }
 
-	public int getVersion() {
-		return version;
-	}
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
 
-	public void setVersion(int version) {
-		this.version = version;
-	}
+    public List<OrderItem> getItems() {
+        return items;
+    }
 
-	public String getOrderNumber() {
-		return orderNumber;
-	}
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
+    }
 
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
+    public void addOrderItem(OrderItem orderItem) {
+        this.items.add(orderItem);
+        orderItem.setOrder(this);
+    }
 
-	public List<OrderItem> getItems() {
-		return items;
-	}
-
-	public void setItems(List<OrderItem> items) {
-		this.items = items;
-	}
-
-	public void addOrderItem(OrderItem orderItem) {
-		this.items.add(orderItem);
-		orderItem.setOrder(this);
-	}
 }

@@ -1,245 +1,228 @@
 package edu.mum.domain;
 
+import edu.mum.validation.EmptyOrSize;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import java.util.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * An item for auction.
  *
  * @author Christian Bauer
  */
-
-@NamedQuery(name = "Item.findByCategory", query = "select i from Item i, Category c where c.name = :categoryName and i member of c.items")
+@NamedQuery(name = "Item.findByCategory",
+        query = "select i from Item i, Category c where c.name = :categoryName and i member of c.items")
 
 @Entity
 @Table(name = "ITEM")
-public class Item implements Serializable {
+public class Item {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ITEM_ID")
+    private Long id = null;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "ITEM_ID")
-	private Long id = null;
+    @Version
+    @Column(name = "OBJ_VERSION")
+    private int version = 0;
 
-	@Version
-	@Column(name = "OBJ_VERSION")
-	private int version = 0;
+    @Column(name = "ITEM_NAME", length = 255, nullable = false, updatable = false)
+    @EmptyOrSize(min = 5, max = 30, message = "{EmptyOrSize}")
+    private String name;
 
-	@Column(name = "ITEM_NAME", length = 255, nullable = false, updatable = false)
-	private String name;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "itemSellerId")
+    private User seller;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name = "itemSellerId")
-	private User seller;
+    @Transient
+    private User buyer;
 
-	@Transient
-	private User buyer;
+    @Column(name = "DESCRIPTION", length = 4000, nullable = false)
+    @EmptyOrSize(min = 5, max = 200, message = "{EmptyOrSize}")
+    private String description;
 
-	@Column(name = "DESCRIPTION", length = 4000, nullable = false)
-	private String description;
+    @NotNull
+    private BigDecimal initialPrice;
 
-	private BigDecimal initialPrice;
+    private BigDecimal reservePrice;
 
-	private BigDecimal reservePrice;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Category> categories = new HashSet<Category>();
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	private Set<Category> categories = new HashSet<Category>();
+    @Transient
+    private User approvedBy;
 
-	@Transient
-	private User approvedBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "APPROVAL_DATETIME", nullable = true)
+    private Date approvalDatetime;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "APPROVAL_DATETIME", nullable = true)
-	private Date approvalDatetime;
+    @Transient
+    private Collection<String> images = new ArrayList<String>();
 
-	@Transient
-	private Collection<String> images = new ArrayList<String>();
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CREATED", nullable = true, updatable = false)
+    private Date created = new Date();
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "CREATED", nullable = true, updatable = false)
-	private Date created = new Date();
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "START_DATE", nullable = true, updatable = false)
+    private Date startDate;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "START_DATE", nullable = true, updatable = false)
-	private Date startDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "END_DATE", nullable = true, updatable = false)
+    private Date endDate;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "END_DATE", nullable = true, updatable = false)
-	private Date endDate;
+    // ********************** Accessor Methods ********************** //
+    public Long getId() {
+        return id;
+    }
 
-	// ********************** Accessor Methods ********************** //
+    public int getVersion() {
+        return version;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getVersion() {
-		return version;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public User getSeller() {
+        return seller;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public User getBuyer() {
+        return buyer;
+    }
 
-	public User getSeller() {
-		return seller;
-	}
+    public void setBuyer(User buyer) {
+        this.buyer = buyer;
+    }
 
-	public User getBuyer() {
-		return buyer;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setBuyer(User buyer) {
-		this.buyer = buyer;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public BigDecimal getInitialPrice() {
+        return initialPrice;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setInitialPrice(BigDecimal initialPrice) {
+        this.initialPrice = initialPrice;
+    }
 
-	public BigDecimal getInitialPrice() {
-		return initialPrice;
-	}
+    public BigDecimal getReservePrice() {
+        return reservePrice;
+    }
 
-	public void setInitialPrice(BigDecimal initialPrice) {
-		this.initialPrice = initialPrice;
-	}
+    public void setReservePrice(BigDecimal reservePrice) {
+        this.reservePrice = reservePrice;
+    }
 
-	public BigDecimal getReservePrice() {
-		return reservePrice;
-	}
+    public Date getStartDate() {
+        return startDate;
+    }
 
-	public void setReservePrice(BigDecimal reservePrice) {
-		this.reservePrice = reservePrice;
-	}
+    public Date getEndDate() {
+        return endDate;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public void addCategory(Category category) {
+        this.categories.add(category);
+        category.getItems().add(this);
+    }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+    public User getApprovedBy() {
+        return approvedBy;
+    }
 
-	public void addCategory(Category category) {
-		this.categories.add(category);
-		category.getItems().add(this);
-	}
+    public void setApprovedBy(User approvedBy) {
+        this.approvedBy = approvedBy;
+    }
 
-	public User getApprovedBy() {
-		return approvedBy;
-	}
+    public Date getApprovalDatetime() {
+        return approvalDatetime;
+    }
 
-	public void setApprovedBy(User approvedBy) {
-		this.approvedBy = approvedBy;
-	}
+    public void setApprovalDatetime(Date approvalDatetime) {
+        this.approvalDatetime = approvalDatetime;
+    }
 
-	public Date getApprovalDatetime() {
-		return approvalDatetime;
-	}
+    // Read-only, modify through Category#addItem() and Category@removeItem();
+    public Set<Category> getCategories() {
+        return Collections.unmodifiableSet(categories);
+    }
 
-	public void setApprovalDatetime(Date approvalDatetime) {
-		this.approvalDatetime = approvalDatetime;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	// Read-only, modify through Category#addItem() and Category@removeItem();
-	public Set<Category> getCategories() {
-		return Collections.unmodifiableSet(categories);
-	}
+    public void setSeller(User seller) {
+        this.seller = seller;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
 
-	public void setSeller(User seller) {
-		this.seller = seller;
-	}
+    public Collection<String> getImages() {
+        return images;
+    }
 
-	public void setCategories(Set<Category> categories) {
-		this.categories = categories;
-	}
+    public Date getCreated() {
+        return created;
+    }
 
-	public Collection<String> getImages() {
-		return images;
-	}
+    // ********************** Common Methods ********************** //
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Item)) {
+            return false;
+        }
 
-	public Date getCreated() {
-		return created;
-	}
+        final Item item = (Item) o;
 
-	// ********************** Common Methods ********************** //
+        if (!(created.getTime() == item.created.getTime())) {
+            return false;
+        }
+        if (name != null ? !name.equals(item.name) : item.name != null) {
+            return false;
+        }
 
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Item))
-			return false;
+        return true;
+    }
 
-		final Item item = (Item) o;
+    public int hashCode() {
+        int result;
+        result = (name != null ? name.hashCode() : 0);
+        result = 29 * result + created.hashCode();
+        return result;
+    }
 
-		if (!(created.getTime() == item.created.getTime()))
-			return false;
-		if (name != null ? !name.equals(item.name) : item.name != null)
-			return false;
+    public String toString() {
+        return "Item ('" + getId() + "'), "
+                + "Name: '" + getName() + "' "
+                + "Initial Price: '" + getInitialPrice() + "'";
+    }
 
-		return true;
-	}
+    public int compareTo(Object o) {
+        if (o instanceof Item) {
+            // Don't compare Date objects! Use the time in milliseconds!
+            return Long.valueOf(this.getCreated().getTime()).compareTo(
+                    Long.valueOf(((Item) o).getCreated().getTime())
+            );
+        }
+        return 0;
+    }
 
-	public int hashCode() {
-		int result;
-		result = (name != null ? name.hashCode() : 0);
-		result = 29 * result + created.hashCode();
-		return result;
-	}
-
-	public String toString() {
-		return "Item ('" + getId() + "'), " + "Name: '" + getName() + "' " + "Initial Price: '" + getInitialPrice()
-				+ "'";
-	}
-
-	public int compareTo(Object o) {
-		if (o instanceof Item) {
-			// Don't compare Date objects! Use the time in milliseconds!
-			return Long.valueOf(this.getCreated().getTime()).compareTo(Long.valueOf(((Item) o).getCreated().getTime()));
-		}
-		return 0;
-	}
-
-	// ********************** Business Methods ********************** //
-
+    // ********************** Business Methods ********************** //
 }
